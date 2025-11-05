@@ -18,7 +18,7 @@ export default function Home() {
     const { data, error } = await supabase
       .from('students')
       .select('*')
-      .order('id', { ascending: true })
+      .order('id', { ascending: false })
     if (error) console.error('Error fetching data:', error)
     else setStudents(data ?? [])
   }
@@ -60,67 +60,100 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12">
-      <h1 className="text-3xl font-bold mb-6 text-blue-600">🎓 Student Manager</h1>
+    <div
+      className="relative min-h-screen flex flex-col items-center justify-start py-16 overflow-hidden"
+      style={{
+      background:
+        'radial-gradient(circle at 10% 10%, rgba(138,92,255,0.12), transparent 12%),' +
+        'radial-gradient(circle at 90% 90%, rgba(6,182,212,0.08), transparent 15%),' +
+        'linear-gradient(180deg, #06020a 0%, #0b1020 30%, #2a0b3a 100%)',
+      color: 'white',
+      }}
+    >
+      {/* Decorative mystical blobs */}
+      <div className="pointer-events-none absolute -left-24 -top-24 w-80 h-80 rounded-full bg-purple-500 opacity-20 blur-3xl transform rotate-12" />
+      <div className="pointer-events-none absolute -right-32 top-32 w-96 h-96 rounded-full bg-cyan-400 opacity-14 blur-3xl transform -rotate-12" />
+      <div className="pointer-events-none absolute inset-0 animate-[pulse_12s_linear_infinite] opacity-5 bg-[radial-gradient(closest-side,rgba(255,255,255,0.03),transparent)]" />
 
+      <h1 className="z-10 text-4xl sm:text-5xl font-extrabold mb-8 bg-clip-text text-transparent"
+      style={{
+        backgroundImage: 'linear-gradient(90deg,#c084fc,#60a5fa,#34d399)',
+        textShadow: '0 6px 30px rgba(0,0,0,0.6)',
+      }}
+      >
+      🔮 Arcane Student Ledger
+      </h1>
+
+      <div className="z-10 w-full max-w-3xl px-6">
       {/* Add Form */}
       <form
         onSubmit={addStudent}
-        className="bg-white p-6 rounded-2xl shadow-md mb-8 w-full max-w-md flex flex-col sm:flex-row gap-2"
+        className="backdrop-blur-md bg-white/6 border border-white/8 shadow-xl rounded-3xl p-5 mb-8 flex flex-col sm:flex-row gap-3 items-center"
       >
         <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="flex-1 bg-white/4 placeholder:text-white/60 text-white border border-white/6 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-cyan-300 transition"
         />
         <input
-          type="number"
-          placeholder="Age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          className="w-24 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+        type="number"
+        placeholder="Age"
+        value={age}
+        onChange={(e) => setAge(e.target.value)}
+        className="w-28 bg-white/4 placeholder:text-white/60 text-white border border-white/6 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-purple-300 transition"
         />
         <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        type="submit"
+        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-400 hover:scale-[1.02] text-white px-5 py-3 rounded-lg shadow-md transition"
         >
-          Add
+        Add
         </button>
       </form>
 
       {/* Students List */}
-      <div className="w-full max-w-md space-y-3">
+      <div className="space-y-4">
         {students.length === 0 ? (
-          <p className="text-gray-500 text-center">No students yet.</p>
+        <div className="backdrop-blur-md bg-white/4 border border-white/6 rounded-2xl p-8 text-center text-white/80 shadow-lg">
+          <p className="text-lg">No students yet. The grimoire is empty... for now.</p>
+        </div>
         ) : (
-          students.map((s) => (
-            <div
-              key={s.id}
-              className="bg-white shadow p-4 rounded-xl flex justify-between items-center border border-gray-200"
+        students.map((s) => (
+          <div
+          key={s.id}
+          className="relative overflow-hidden backdrop-blur-sm bg-gradient-to-r from-white/3 to-white/6 border border-white/6 rounded-2xl p-4 flex justify-between items-center shadow-lg hover:shadow-2xl transition"
+          >
+          {/* rune accent */}
+          <div className="absolute -left-8 -top-8 w-24 h-24 rounded-full bg-gradient-to-tr from-violet-500/10 to-cyan-400/6 blur-2xl pointer-events-none" />
+
+          <div>
+            <h2 className="font-semibold text-white text-lg">{s.name}</h2>
+            <p className="text-sm text-white/70">Age: {s.age}</p>
+          </div>
+          <div className="flex gap-3">
+            <button
+            onClick={() => updateStudent(s.id, s.age)}
+            className="px-3 py-1 rounded-md bg-yellow-400/90 hover:bg-yellow-500 text-black text-sm shadow-sm transition"
             >
-              <div>
-                <h2 className="font-semibold text-gray-800">{s.name}</h2>
-                <p className="text-sm text-gray-500">Age: {s.age}</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => updateStudent(s.id, s.age)}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteStudent(s.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
+            Edit
+            </button>
+            <button
+            onClick={() => deleteStudent(s.id)}
+            className="px-3 py-1 rounded-md bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 text-white text-sm shadow-sm transition"
+            >
+            Delete
+            </button>
+          </div>
+          </div>
+        ))
         )}
+      </div>
+      </div>
+
+      {/* Footer sigil */}
+      <div className="z-0 absolute bottom-8 left-1/2 -translate-x-1/2 text-white/20 text-xs">
+      <span>✵ Ancient Mage Theme • glassmorphism • high-contrast</span>
       </div>
     </div>
   )
